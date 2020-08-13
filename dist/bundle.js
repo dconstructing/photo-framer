@@ -2442,6 +2442,10 @@ class PhotoBoothElement extends LitElement {
 		return {
 			fileDataURL: {
 				attribute: 'file-data-url',
+				converter: (value, type) => {
+					if (value === "null") return null;
+					return value;
+				},
 				reflect: false
 			},
 			imageCapture: {
@@ -2560,8 +2564,13 @@ class PhotoBoothElement extends LitElement {
 	}
 
 	handleSaveClicked() {
+		const now = Date.now();
+		const dateTimeFormat = new Intl.DateTimeFormat('en', { year: 'numeric', month: '2-digit', day: '2-digit' });
+		const [{ value: month },,{ value: day },,{ value: year }] = dateTimeFormat.formatToParts(now);
+		const filename = `picture-${year}-${month}-${day}.png`;
+
 		const anchor = document.createElement('a');
-		anchor.download = 'picture.png';
+		anchor.download = filename;
 		anchor.href = window.URL.createObjectURL(this.saveableBlob);
 		anchor.dataset.downloadurl = ['image/png', anchor.download, anchor.href].join(':');
 		anchor.click();
